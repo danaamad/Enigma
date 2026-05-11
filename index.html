@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ביורוקרטיזציה תחת אש - פלוגה ב'</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #e5ddd5;
+            background-image: url('https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png');
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        #overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.9);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+            color: white;
+            text-align: center;
+            padding: 20px;
+        }
+
+        #start-btn {
+            padding: 20px 40px;
+            font-size: 22px;
+            background-color: #25D366;
+            color: white;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: bold;
+            box-shadow: 0 4px 15px rgba(37, 211, 102, 0.4);
+            margin-top: 20px;
+        }
+
+        .header {
+            background-color: #075e54;
+            color: white;
+            padding: 10px 15px;
+            display: flex;
+            align-items: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            z-index: 1000;
+        }
+
+        .header-info { margin-right: 10px; }
+        #group-name-header { font-weight: bold; font-size: 15px; display: block; }
+        .group-members { font-size: 11px; opacity: 0.8; }
+
+        #chat-container {
+            flex: 1;
+            overflow-y: auto;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            scroll-behavior: smooth;
+        }
+
+        .message, .system-msg, .red-alert {
+            display: none;
+            max-width: 80%;
+            padding: 8px 10px;
+            border-radius: 8px;
+            margin-bottom: 12px;
+            font-size: 15px;
+            line-height: 1.4;
+            position: relative;
+            box-shadow: 0 1px 1px rgba(0,0,0,0.1);
+            animation: slideIn 0.2s ease-out forwards;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: scale(0.95) translateY(10px); }
+            to { opacity: 1; transform: scale(1) translateY(0); }
+        }
+
+        .received { background-color: #ffffff; align-self: flex-start; border-top-right-radius: 0; }
+        
+        .system-msg {
+            background-color: #e1f3fb;
+            color: #555;
+            align-self: center;
+            font-size: 12px;
+            padding: 6px 14px;
+            border-radius: 7px;
+            margin: 15px 0;
+            text-align: center;
+        }
+
+        .red-alert {
+            background-color: #ff3b30;
+            color: white;
+            font-weight: bold;
+            align-self: center;
+            text-align: center;
+            border-radius: 5px;
+            animation: pulse 0.8s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        .sender { font-weight: bold; font-size: 13px; display: block; margin-bottom: 3px; }
+        .c-k { color: #f4511e; } /* קמב"ץ */
+        .c-i { color: #1e88e5; } /* איציק */
+        .c-ko { color: #43a047; } /* קובי */
+        .c-y { color: #e53935; } /* יוסי */
+        .c-g { color: #8e24aa; } /* גיא */
+        .c-r { color: #5d4037; } /* רס"ר */
+        .c-ki { color: #3949ab; } /* קישור */
+
+        .timestamp { font-size: 10px; color: #999; text-align: left; margin-top: 5px; display: block; }
+        .message-text { white-space: pre-line; word-wrap: break-word; }
+    </style>
+</head>
+<body>
+
+<div id="overlay">
+    <h2>תמלול קבוצתי: פלוגה ב'</h2>
+    <p>לוודא גילוח, קורס בטיחות בדרכים וסוללות למשרוקית</p>
+    <button id="start-btn">היכנס לשיחה 🟢</button>
+</div>
+
+<div class="header">
+    <div class="header-info">
+        <span id="group-name-header">פלוגה ב' - משימה צפון (מעודכן: דרום) (מעודכן: אולי מרכז?) 🌲🚐🔫</span>
+        <span class="group-members">קמב"ץ, איציק, קובי, יוסי, גיא, רס"ר...</span>
+    </div>
+</div>
+
+<div id="chat-container">
+    <div class="message received"><span class="sender c-k">קמב"ץ פלוגתי</span><span class="message-text">חבר'ה, עדכון דחוף מהמח"ט. המשימה בצפון מבוטלת. כל מי שהגיע לצומת עמיעד – לעשות פרסה. אנחנו יורדים לעוטף עזה. נפגשים בחניון רעים ב-14:00.</span><span class="timestamp">14:01</span></div>
+
+    <div class="message received"><span class="sender c-i">איציק סמל מחלקה</span><span class="message-text">רגע, מה דרום? אני כבר פרקתי ציוד בראש פינה. חצי מחלקה פה כבר פתחה גזייה וחיים הטבח התחיל להנדס שקשוקה עם טונה וופלים. אנחנו לא זזים עד שהמחבת מתקררת.</span><span class="timestamp">14:02</span></div>
+
+    <div class="message received"><span class="sender c-ko">קובי חפ"ש</span><span class="message-text">המפקד, מה עם המכולה של התחמושת? היא כבר על משאית בדרך למנרה. הנהג דרוזי, הוא לא עונה לנייד כי הוא בקידוש או בחתונה, והוא נוסע כאילו הוא בפורמולה 1.</span><span class="timestamp">14:03</span></div>
+
+    <div class="message received"><span class="sender c-k">קמב"ץ פלוגתי</span><span class="message-text">המכולה תמשיך לצפון. אין אישור דלק למשאית לחזור, נגמרה ההקצאה האוגדתית כי מישהו במפקדה השאיר גנרטור דולק לסופ"ש בשביל להטעין את האיירפודס שלו.</span><span class="timestamp">14:05</span></div>
+
+    <div class="message received"><span class="sender c-y">יוסי (החייל הממורמר)</span><span class="message-text">אז איך נשמור בדרום? עם אבנים? עם כוונות של העיניים? אולי פשוט נעשה להם "נו נו נו" עם האצבע?</span><span class="timestamp">14:06</span></div>
+
+    <div class="message received"><span class="sender c-k">קמב"ץ פלוגתי</span><span class="message-text">קיבלנו אישור להתמקם זמנית בתוך קיבוץ "נחת רוח" שבעוטף. המזכירות לא הרשתה להיכנס למדשאות אז אנחנו ישנים בשטח החקלאי, ממש צמוד לדיר הכבשים. זה ה"מפח"ט" החדש שלנו.</span><span class="timestamp">14:10</span></div>
+
+    <div class="message received"><span class="sender c-g">גיא (ההייטקיסט)</span><span class="message-text">שלחתי לינק ל-Google Doc של ניהול סיכונים פלוגתי. נא למלא מי איבד מה. אני כרגע בזום עם הדירקטוריון שלי תוך כדי שאני מנסה להבין איך מקפלים אוהל סיירים בתוך דיר כבשים.</span><span class="timestamp">14:12</span></div>
+
+    <div class="message received"><span class="sender c-k">קמב"ץ פלוגתי</span><span class="message-text">קיבלנו הנחיה מהאוגדה: עד שהלוגיסטיקה תתארגן, מי שעולה לשמירה מקבל משרוקית תקנית.
+
+שריקה אחת – חשד לחדירה.
+שתי שריקות – זיהוי ודאי.
+שלוש שריקות – ארוחת ערב הגיעה.
+שריקה ארוכה ומתמשכת – איבדתי את הקשר לעצמי, בואו לקחת אותי הביתה.</span><span class="timestamp">14:15</span></div>
+
+    <div class="message received"><span class="sender c-ko">קובי חפ"ש</span><span class="message-text">קמב"ץ, שרקתי בטעות פעמיים כי נכנס לי זבוב לפה. עכשיו כל הגדוד בהסתערות על הדיר של הקיבוץ. הכבשים בטראומה, והתאו הראשי נראה עצבני.</span><span class="timestamp">14:18</span></div>
+
+    <div class="red-alert">[צבע אדום! צבע אדום!]</div>
+
+    <div class="message received"><span class="sender c-y">יוסי (החייל הממורמר)</span><span class="message-text">יופי, פצמ"רים. אני בתוך תעלה של ביוב, יש פה ריח של נבלה ומישהו פה נוגע לי ברגל. קובי, זה אתה?</span><span class="timestamp">14:20</span></div>
+
+    <div class="message received"><span class="sender c-ko">קובי חפ"ש</span><span class="message-text">לא, זה התאו מהדיר. נראה לי הוא מחפש מחסה.</span><span class="timestamp">14:21</span></div>
+
+    <div class="message received"><span class="sender c-k">קמב"ץ פלוגתי</span><span class="message-text">חבר'ה, בזמן שאתם בתעלות, המח"ט דורש שכולם ימלאו טופס 1004 (הצהרת בריאות ותקינות ציוד דיגיטלית). מי שלא ממלא לא מבוטח במקרה של רסיס. שלחתי לינק לקבוצה, זה דורש אימות דו-שלבי דרך האפליקציה של הצבא.</span><span class="timestamp">14:25</span></div>
+
+    <div class="message received"><span class="sender c-g">גיא (ההייטקיסט)</span><span class="message-text">קמב"ץ, אין פה קליטה בתעלה. אני מנסה לעשות "שכחתי סיסמה" והצבא שלח לי קוד אימות למספר של הטלפון הקווי בבית שלי ב-2002. מה עושים?</span><span class="timestamp">14:27</span></div>
+
+    <div class="message received"><span class="sender c-r">רס"ר הגדוד</span><span class="message-text">למה אתם בתעלות בלי קסדות? אני רואה אתכם במצלמות האבטחה של הקיבוץ. יוסי, המצנפת שלך הפוכה. אתה נראה כמו פטריה מורעלת. תתיישר מיד, פצמ"ר לא פוטר מדיגום!</span><span class="timestamp">14:30</span></div>
+
+    <div class="message received"><span class="sender c-y">יוסי (החייל הממורמר)</span><span class="message-text">רס"ר, יש פה פיצוצים! האדמה רועדת! איזה מצנפת?! הקסדה שלי בכלל מהמלחמה של 73, היא עשויה מפלסטיק ממוחזר וקרטון ביצים.</span><span class="timestamp">14:32</span></div>
+
+    <div class="message received"><span class="sender c-r">רס"ר הגדוד</span><span class="message-text">לא תירוץ. ומי שוכב בבוץ עם מכנסיים בלי גומיות? איציק, אמרתי לך לעבור על הגומיות!</span><span class="timestamp">14:35</span></div>
+
+    <div class="message received"><span class="sender c-i">איציק סמל מחלקה</span><span class="message-text">חבר'ה, עצרתי טרמפ עם משאית של חברת "רהיטי השלושה" שעברה פה בטעות בדרך למחסן באשדוד. הנהג אמר שהוא מפחד מהבומים אז הוא נותן גז. אני עולה עליו "לאבטח" את הספות. תהנו בתעלה, אני הולך לחפש ציוויליזציה.</span><span class="timestamp">14:36</span></div>
+
+    <div class="message received"><span class="sender c-ki">קצין קישור</span><span class="message-text">חבר'ה, בזמן שאתם תופסים מחסה, קיבלנו הודעה מהשלישות. חסר לכם "אישור נסיעה ברכב אזרחי" עבור הטרקטור של הקיבוץ שיוסי נהג עליו בבוקר. מי שלא חותם על הנספח בתוך 5 דקות מקבל קנס של 500 ש"ח מהלוגיסטיקה.</span><span class="timestamp">14:38</span></div>
+
+    <div class="message received"><span class="sender c-ko">קובי חפ"ש</span><span class="message-text">המפקד, נפל פצמ"ר 10 מטר מהתעלה. אני חושב שאיבדתי שמיעה באוזן שמאל אבל אני עדיין שומע את הרס"ר צועק עליי שאין לי גילוח. זה הגיוני?</span><span class="timestamp">14:40</span></div>
+
+    <div class="message received"><span class="sender c-k">קמב"ץ פלוגתי</span><span class="message-text">חבר'ה, שינוי משימה נוסף! 📢
+בגלל הירי, המח"ט החליט שהקיבוץ לא בטוח. אנחנו עולים חזרה לצפון, אבל הפעם עוצרים בדרך בבסיס הדרכה בצאלים כדי לעבור קורס בטיחות בדרכים למילואימניק (זה חובה לפני שעולים על כביש 6).</span><span class="timestamp">14:45</span></div>
+
+    <div class="message received"><span class="sender c-y">יוסי (החייל הממורמר)</span><span class="message-text">אנחנו תחת אש! איזה קורס בטיחות בדרכים?! הדרך הכי בטוחה שלי כרגע זה זחילה על הגחון עד אשקלון!</span><span class="timestamp">14:47</span></div>
+
+    <div class="message received"><span class="sender c-r">רס"ר הגדוד</span><span class="message-text">יוסי, אם אתה זוחל – שים לב שאתה לא שוחק את הברכיות התקניות. קיבלת אותן בחתום, ואם יש עליהן סימני שימוש אני מחייב אותך בדו"ח נזק.</span><span class="timestamp">14:50</span></div>
+
+    <div class="message received"><span class="sender c-i">איציק סמל מחלקה</span><span class="message-text">אני יוצא מהקבוצה. אם מישהו מחפש אותי, אני בבורגר ראנץ' בצומת, עשיתי עסקה עם הזכיין – אני שומר לו על הצ'יפסר והוא נותן לי לישון במחסן של הקרטונים. תמשיכו למלא טפסים, אני פה עם ארוחת קומבינה ומיזוג.</span><span class="timestamp">14:52</span></div>
+
+    <div class="system-msg">איציק סמל מחלקה עזב/ה את הקבוצה</div>
+
+    <div class="system-msg" data-name='מי שיודע איפה אנחנו שישלח מיקום'>קמב"ץ פלוגתי שינה את שם הקבוצה ל: "מי שיודע איפה אנחנו שישלח מיקום"</div>
+
+    <div class="message received"><span class="sender c-k">קמב"ץ פלוגתי</span><span class="message-text">איציק יצא? מישהו צריך להחליף אותו בתור "נאמן קורונה פלוגתי". יוסי, זה אתה. תעבור בין כולם בתעלות ותבדוק אם יש להם אלכוג'ל בתוקף.</span><span class="timestamp">14:55</span></div>
+
+    <div class="message received"><span class="sender c-y">יוסי (החייל הממורמר)</span><span class="message-text">המשרוקית תקועה לי בגרון מההדף של הפיצוץ, האלכוג'ל נשפך לי על הפסטרמה, והרס"ר רוצה שאני אתגלח עם רסיס של פצמ"ר. אני מגיש טופס 55 לעבור לגדוד של חדי קרן.</span><span class="timestamp">14:57</span></div>
+
+    <div class="message received"><span class="sender c-ki">קצין קישור</span><span class="message-text">חבר'ה, המצב בצפון מחמיר. המח"ט הגיע למחסן התחמושת וגילה שהמפתח אצל איציק (בטח בתוך הקרטונים של הצ'יפס). הוא ניסה לשרוק שלוש שריקות במשרוקית שלו כדי לקרוא לעזרה, אבל יצא לו צליל של חלילית שבורה כי נכנס לו חול לקנה. הוא עומד שם ומקלל ביידיש מול המנעול.</span><span class="timestamp">14:58</span></div>
+
+    <div class="message received"><span class="sender c-y">יוסי (החייל הממורמר)</span><span class="message-text">המשרוקית אצלו בכיס. שינסה לשרוק למנעול. אם זה לא עובד, שיגיד למנעול שהוא לא מדוגם ואין לו גומיות ב' – אולי המנעול ייפתח מרוב פחד.</span><span class="timestamp">14:59</span></div>
+
+    <div class="message received"><span class="sender c-ko">קובי חפ"ש</span><span class="message-text">המזאית של התחמושת הגיעה! אה, רגע... זה שליח של "וולט" שהתבלבל במיקום וחשב שהזמנו המבורגר לתוך התעלה. הוא דורש טיפ על סיכון חיים וקוד קופון להנחה בבורגר ראנץ'.</span><span class="timestamp">15:00</span></div>
+
+    <div class="system-msg" data-name='ביורוקרטיזציה תחת אש - פלוגה ב' וחיות אחרות'>קמב"ץ פלוגתי שינה את שם הקבוצה ל: "ביורוקרטיזציה תחת אש - פלוגה ב' וחיות אחרות"</div>
+</div>
+
+<script>
+    const messages = document.querySelectorAll('.message, .system-msg, .red-alert');
+    const container = document.getElementById('chat-container');
+    const overlay = document.getElementById('overlay');
+    const startBtn = document.getElementById('start-btn');
+    const groupTitle = document.getElementById('group-name-header');
+    
+    // צליל התראה גבוה וחד
+    const notificationSound = new Audio('https://assets.mixkit.co/active_storage/sfx/2358/2358-preview.mp3');
+
+    let index = 0;
+
+    function showNextMessage() {
+        if (index < messages.length) {
+            const msg = messages[index];
+            msg.style.display = 'block';
+            
+            // השמעת סאונד
+            notificationSound.currentTime = 0;
+            notificationSound.play().catch(e => {});
+
+            // שינוי שם קבוצה דינמי
+            const newName = msg.getAttribute('data-name');
+            if (newName) {
+                groupTitle.innerText = newName;
+            }
+
+            container.scrollTop = container.scrollHeight;
+
+            // חישוב זמן המתנה לפי אורך הטקסט (כדי שיספיקו לקרוא)
+            // 20 מילי-שנייה לכל תו + זמן בסיס של 2.5 שניות
+            let textLen = msg.innerText.length;
+            let waitTime = 2500 + (textLen * 25);
+            
+            // הגבלה למקסימום 8 שניות להודעה ממש ארוכה ומינימום 3 שניות
+            waitTime = Math.min(Math.max(waitTime, 3000), 8500);
+
+            // אם זה "צבע אדום", נקצר את ההמתנה לתגובה שאחריו
+            if (msg.classList.contains('red-alert')) waitTime = 1200;
+
+            index++;
+            setTimeout(showNextMessage, waitTime);
+        }
+    }
+
+    startBtn.addEventListener('click', () => {
+        overlay.style.display = 'none';
+        setTimeout(showNextMessage, 500);
+    });
+</script>
+
+</body>
+</html>
